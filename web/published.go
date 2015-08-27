@@ -1,7 +1,7 @@
 package web
 
 import (
-	data_api "go.stash.c42/slapt/api"
+	data_api "github.com/bsundsrud/slapt/api"
 
 	"github.com/gin-gonic/gin"
 )

@@ -5,10 +5,10 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/bsundsrud/slapt/web"
 	ctx "github.com/smira/aptly/context"
 	"github.com/smira/commander"
 	"github.com/smira/flag"
-	"go.stash.c42/slapt/web"
 )
 
 func rootCmd() *commander.Command {

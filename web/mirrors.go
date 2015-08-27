@@ -1,9 +1,9 @@
 package web
 
 import (
+	"github.com/bsundsrud/slapt/worker"
 	"github.com/gin-gonic/gin"
 	"github.com/smira/aptly/deb"
-	"go.stash.c42/slapt/worker"
 )
 
 //GET /api/mirrors

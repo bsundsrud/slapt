@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"time"
 
-	data_api "go.stash.c42/slapt/api"
+	data_api "github.com/bsundsrud/slapt/api"
 
 	"github.com/gin-gonic/gin"
 	ctx "github.com/smira/aptly/context"
