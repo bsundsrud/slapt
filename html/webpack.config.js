@@ -17,7 +17,7 @@ var config = {
   module: {
     noParse: [],
     loaders: [
-      { test: /\.(js|jsx)$/, loaders: ['react-hot', 'babel'], exclude: [node_modules_dir] },
+      { test: /\.(js|jsx)$/, loaders: ['react-hot', 'babel'], exclude: [node_modules_dir] }
     ]
   },
   plugins: [
