@@ -8,7 +8,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	ctx "github.com/smira/aptly/context"
-	"go.stash.c42/slapt/worker"
+	"github.com/bsundsrud/slapt/worker"
 )
 
 var api *data_api.Api

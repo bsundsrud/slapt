@@ -1,5 +1,6 @@
 import React from 'react';
 import AppComponent from './AppComponent';
-React.render(<AppComponent/>,
+import Repo from './components/repo';
+React.render(<Repo.RepoBox/>,
     document.getElementById('app')
 );

@@ -7,7 +7,7 @@ var node_modules_dir = path.resolve(__dirname, 'node_modules');
 var config = {
   entry: {
     app: ['webpack/hot/dev-server', path.resolve(__dirname, 'src/app.js')],
-    vendors: ['react', 'alt']
+    vendors: ['react', 'alt', 'reqwest']
   },
   resolve: { alias: {} },
   output: {
@@ -28,7 +28,12 @@ var config = {
       template: path.resolve(__dirname, 'src/index.html')
     }),
     new webpack.NoErrorsPlugin()
-  ]
+  ],
+  devServer: {
+    proxy: {
+      "/api/*": "http://localhost:8080"
+    }
+  }
 };
 
 
