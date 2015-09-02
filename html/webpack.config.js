@@ -7,7 +7,7 @@ var node_modules_dir = path.resolve(__dirname, 'node_modules');
 var config = {
   entry: {
     app: ['webpack/hot/dev-server', path.resolve(__dirname, 'src/app.js')],
-    vendors: ['react', 'alt', 'axios']
+    vendors: ['react', 'alt', 'axios', 'react-popover']
   },
   resolve: { alias: {} },
   output: {

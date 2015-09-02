@@ -28,6 +28,22 @@ class RepoActions {
 	dropRepo(repoName) {
 		this.dispatch(repoName);
 	}
+
+	updateRepo(repo) {
+		this.dispatch(repo);
+	}
+
+	updatingRepo() {
+		this.dispatch();
+	}
+
+	loadRepoPackages(data) {
+		this.dispatch(data);
+	}
+
+	loadingRepoPackages() {
+		this.dispatch();
+	}
 }
 
 module.exports = alt.createActions(RepoActions);

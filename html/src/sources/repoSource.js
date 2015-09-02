@@ -1,23 +1,11 @@
 import RepoActions from '../actions/repoActions';
 import axios from 'axios';
 
-axios.interceptors.response.use(function(resp) { return resp; },
-	function(resp) {
-		return Promise.reject({
-			errors: resp.data,
-			status: resp.status,
-			statusText: resp.statusText
-		});
-	})
-
 var RepoSource = {
 	listRepos() {
 		return {
 			remote() {
-					return axios.get('/api/repos')
-						.then(function (resp) {
-							return resp.data;
-						});
+					return axios.get('/api/repos');
 			},
 			local() {
 				return null;
@@ -30,10 +18,7 @@ var RepoSource = {
 	createRepo() {
 		return {
 			remote(repos, newRepo) {
-				return axios.post('/api/repos', newRepo)
-						.then(function (resp) {
-							return resp.data;
-						});
+				return axios.post('/api/repos', newRepo);
 			},
 			local() {
 				return null;
@@ -43,13 +28,39 @@ var RepoSource = {
 			loading: RepoActions.creatingRepo
 		};
 	},
+	getRepoPackages() {
+		return {
+			remote(repos, repoName) {
+				return axios.get('/api/repos/' + repoName + '/packages').then(function(resp) {
+					return {
+						repo: repoName,
+						packages: resp
+					};
+				});
+			},
+			local() { return null; },
+			success: RepoActions.loadRepoPackages,
+			error: RepoActions.opFailed,
+			loading: RepoActions.loadingRepoPackages
+		};
+	},
+	updateRepo() {
+		return {
+			remote(repos, repoName, updates) {
+				return axios.put('/api/repos/' + repoName, updates);
+			},
+			local(repos, repoName, updates) {
+				return null;
+			},
+			success: RepoActions.updateRepo,
+			error: RepoActions.opFailed,
+			loading: RepoActions.updatingRepo
+		};
+	},
 	dropRepo() {
 		return {
 			remote(repos, repoName) {
-				return axios.delete('/api/repos/' + repoName)
-						.then(function (resp) {
-							return resp.data;
-						});
+				return axios.delete('/api/repos/' + repoName);
 			},
 			local() {
 				return null;

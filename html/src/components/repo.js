@@ -2,6 +2,9 @@ import React from 'react';
 import RepoStore from '../stores/repoStore';
 import AltContainer from 'alt/AltContainer';
 import immutable from 'immutable';
+import util from './util';
+import Popover from 'react-popover';
+
 
 var RepoShortDetail = React.createClass({
 	dropRepo: function(evt) {
@@ -10,41 +13,138 @@ var RepoShortDetail = React.createClass({
 	},
 	getInitialState: function() {
 		return {
-			opened: false
+			opened: false,
+			editing: false,
+			repo: immutable.Map(this.props.repo),
+			originalRepo: immutable.Map(this.props.repo),
+			popoverOpen: false
 		};
 	},
+	handleChangeFactory: function(field) {
+		return function(evt) {
+			this.setState({
+				repo: this.state.repo.set(field, evt.target.value)
+			});
+		}.bind(this);
+	},
+	onChangeFactory: function(field) {
+		return function(newValue) {
+			this.setState({
+				repo: this.state.repo.set(field, newValue)
+			});
+		}.bind(this);
+	},
 	toggleOpened: function(evt) {
+		if (!this.state.opened) {
+			RepoStore.getRepoPackages(this.state.repo.get('Name'));
+		}
 		this.setState({opened: !this.state.opened});
 		evt.preventDefault();
 	},
+	startEdit: function(evt) {
+		this.setState({editing: true});
+	},
+	saveAfterEdit: function(evt) {
+		var updatedVals = this.state.repo.remove('Name');
+		RepoStore.updateRepo(this.state.repo.get("Name"), updatedVals.toJS());
+		this.setState({editing: false, originalRepo: this.state.repo});
+		evt.preventDefault();
+	},
+	cancelEdit: function(evt) {
+		this.setState({
+			repo: this.state.originalRepo,
+			editing: false
+		});
+	},
+	togglePopover: function() {
+		this.setState({
+			popoverOpen: !this.state.popoverOpen
+		});
+	},
 	render: function() {
-		var comment = this.props.repo.Comment || (<em>No Comment.</em>);
-		var dist = this.props.repo.DefaultDistribution || (<em>{this.props.repo.Name}</em>);
-		var component = this.props.repo.DefaultComponent || (<em>main</em>);
-		var caretBase = "fa";
+		var comment = this.state.repo.get('Comment');
+		var dist = this.state.repo.get('DefaultDistribution');
+		var component = this.state.repo.get('DefaultComponent');
+		var name = this.state.repo.get('Name');
+		var caretBase = "panel-caret fa";
 		var caretClass = caretBase + (this.state.opened ? " fa-caret-down" : " fa-caret-right");
-		var caretStyle = {
-			fontSize: '1.4em',
-			width: '1.1em',
-			cursor: 'pointer'
-		};
-		var panelBody = '';
-		if (this.state.opened) {
-			panelBody = (
-				<div className="panel-body">
-					<p>Default Distribution: {dist}</p>
-					<p>Default Component: {component}</p>
+		var packageCount = this.props.repo["Packages"] ? this.props.repo['Packages'].length : 'N/A';
+		
+		var editButton = (<button className="btn btn-default" onClick={this.startEdit}>Edit</button>);
+
+		if (this.state.editing) {
+			editButton = (
+				<div className="btn-group">
+					<button className="btn btn-success" onClick={this.saveAfterEdit}>Save</button>
+					<button className="btn btn-danger" onClick={this.cancelEdit}>Cancel</button>
 				</div>
 			);
 		}
 
+		var panelBody = '';
+		if (this.state.opened) {
+			var popoverBody = (<p style={{backgroundColor: 'white'}}>I'm a popover</p>);
+			var popoverTarget = (<button className="btn btn-default">Popover-trigger</button>);
+			//var popover = Popover({isOpen: true});
+			var popover = (
+				<Popover isOpen={this.state.popoverOpen} body={popoverBody}>
+					<button className="btn btn-default" onClick={this.togglePopover}>Popover-trigger</button>
+				</Popover>
+			);
+			panelBody = (
+				<div className="panel-body">
+					<form className="form-horizontal col-xs-12" onSubmit={this.saveAfterEdit}>
+						<util.EditableTextWithLabel 
+							value={dist}
+							onChange={this.onChangeFactory('DefaultDistribution')}
+							editing={this.state.editing}
+							label="Default Distribution:"
+							defaultValue={name}
+							placeholder="Default Distribution..." />
+						<util.EditableTextWithLabel 
+							value={component}
+							onChange={this.onChangeFactory('DefaultComponent')}
+							editing={this.state.editing}
+							label="Default Component:"
+							defaultValue="main"
+							placeholder="Default Component..." />
+						<div className="form-group">
+							<label className="control-label col-xs-12 col-md-2">Packages:</label>
+							<div className="col-xs-12 col-md-10">
+								<label className="control-label inline-display-control">{packageCount}</label>
+							</div>
+						</div>
+					</form>
+					<hr />
+					{editButton}
+					{popover}
+					
+				</div>
+			);
+		}
+		
 		return (<div className="panel panel-default">
 			<div className="panel-heading">
-				<i className={caretClass} style={caretStyle} onClick={this.toggleOpened}></i>
-				{ this.props.repo.Name } <span className="small"> { comment }</span>
-				<span className="pull-right">
-					<a onClick={this.dropRepo}><i className="fa fa-remove"></i></a>
-				</span>
+				<div className="row">
+					<div className="col-xs-2">
+						<i className={caretClass} onClick={this.toggleOpened}></i>
+						{name} 
+					</div>
+					<div className="col-xs-9">
+						<util.EditableText value={comment} 
+										   onChange={this.onChangeFactory('Comment')}
+										   editing={this.state.editing}
+										   editClasses="form-control inline-edit-control"
+										   placeholder="Comment..." 
+										   defaultValue="No Comment."
+										   displayClasses="small" />
+					</div>
+					<div className="col-xs-1">
+						<span className="pull-right">
+							<a onClick={this.dropRepo}><i className="fa fa-remove"></i></a>
+						</span>
+					</div>
+				</div>
 			</div>
 			{panelBody}
 		</div>)
@@ -75,11 +175,11 @@ var RepoList = React.createClass({
 				<div>Loading...</div>
 			)
 		}
-		var detailNodes = this.props.repos.map(function(repo) {
+		var detailNodes = this.props.repoMap.map(function(repo) {
 			return (
 				<RepoShortDetail key={repo.Name} repo={repo} />
 			)
-		})
+		}).toArray();
 		return (
 			<div>
 				{errorFlash}
