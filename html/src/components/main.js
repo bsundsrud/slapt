@@ -1,6 +1,7 @@
 import React from 'react';
 import Repo from './repo';
 import Snapshot from './snapshot';
+import Mirror from './mirror';
 import axios from 'axios';
 
 axios.interceptors.response.use(
@@ -27,6 +28,7 @@ var Main = React.createClass({
 					<Snapshot.SnapshotBox/>
 				</div>
 				<div className="col-xs-12">
+					<Mirror.MirrorBox/>
 				</div>
 			</div>
 		);

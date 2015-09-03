@@ -60,7 +60,9 @@ var RepoSource = {
 	dropRepo() {
 		return {
 			remote(repos, repoName) {
-				return axios.delete('/api/repos/' + repoName);
+				return axios.delete('/api/repos/' + repoName).then(function(resp) {
+					return repoName;
+				});
 			},
 			local() {
 				return null;

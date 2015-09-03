@@ -3,10 +3,11 @@ import SnapshotStore from '../stores/snapshotStore';
 import AltContainer from 'alt/AltContainer';
 import immutable from 'immutable';
 import util from './util';
+import moment from 'moment';
 
 var SnapshotShortDetail = React.createClass({
 	dropSnapshot: function(evt) {
-		SnapshotStore.dropSnapshot(this.props.name);
+		SnapshotStore.dropSnapshot(this.state.snapshot.get('Name'));
 		evt.preventDefault();
 	},
 	getInitialState: function() {
@@ -68,8 +69,13 @@ var SnapshotShortDetail = React.createClass({
 
 		var panelBody = '';
 		if (this.state.opened) {
+			var created = moment(this.state.snapshot.get('CreatedAt'));
 			panelBody = (
 				<div className="panel-body">
+					<dl className="dl-horizontal">
+						<dt>Created:</dt>
+						<dd>{created.format('MMMM Do YYYY, h:mm:ss a')} <em className="small">({created.fromNow()})</em></dd>
+					</dl>
 					{editButton}
 				</div>
 			);
@@ -140,68 +146,6 @@ var SnapshotList = React.createClass({
 	}
 });
 
-var SnapshotCreate = React.createClass({
-	getInitialState: function() {
-		return {
-			data: immutable.Map({
-				Name: '',
-				Comment: '',
-				DefaultDistribution: '',
-				DefaultComponent: ''
-			})
-		};
-	},
-	createSnapshot: function(evt) {
-		SnapshotStore.createSnapshot(this.state.data.toJS());
-		this.setState(this.getInitialState());
-		evt.preventDefault();
-	},
-	handleChangeFactory: function(field) {
-		return function(evt) {
-
-			this.setState({
-				data: this.state.data.set(field, evt.target.value)
-			});
-		}.bind(this);
-	},
-	render: function() {
-		var state = this.state.data;
-		return (
-			<form className="form-horizontal">
-				<div className="form-group">
-					<div className="col-sm-12">
-						<input type="text" className="form-control" placeholder="Snapshot Name..." 
-						value={state.get('Name')} onChange={this.handleChangeFactory('Name')} />
-					</div>
-				</div>
-				<div className="form-group">
-					<div className="col-sm-12">
-						<input type="text" className="form-control" placeholder="Snapshot Comment..." 
-						value={state.get('Comment')} onChange={this.handleChangeFactory('Comment')} />
-					</div>
-				</div>
-				<div className="form-group">
-					<div className="col-sm-12">
-						<input type="text" className="form-control" placeholder="Default Dist..." 
-						value={state.get('DefaultDistribution')} onChange={this.handleChangeFactory('DefaultDistribution')} />
-					</div>
-				</div>
-				<div className="form-group">
-					<div className="col-sm-12">
-						<input type="text" className="form-control" placeholder="Default Component..." 
-						value={state.get('DefaultComponent')} onChange={this.handleChangeFactory('DefaultComponent')} />
-					</div>
-				</div>
-				<div className="form-group">
-					<div className="col-sm-12">
-						<button type="text" className="btn btn-default" onClick={this.createSnapshot}>Create</button>
-					</div>
-				</div>
-			</form>
-		)
-	}
-});
-
 var SnapshotBox = React.createClass({
 	componentDidMount: function() {
 		SnapshotStore.listSnapshots();
@@ -213,8 +157,6 @@ var SnapshotBox = React.createClass({
 				<AltContainer store={SnapshotStore}>
 					<SnapshotList />
 				</AltContainer>
-				<hr />
-				<SnapshotCreate />
 			</div>
 		)
 	}

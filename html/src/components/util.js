@@ -1,6 +1,16 @@
 import React from 'react';
 import immutable from 'immutable';
 
+var snapshotDate = function(d) {
+	if (!d) {
+		d = new Date();
+	}
+	function pad(n) {
+		return n<10 ? '0' + n: n;
+	}
+	return d.getFullYear() + pad(d.getMonth()) + pad(d.getDate()) + '-' + pad(d.getHours()) + pad(d.getMinutes());
+}
+
 var EditableText = React.createClass({
 	/* props:
 		value: String
@@ -96,7 +106,45 @@ var EditableTextWithLabel = React.createClass({
 	}
 });
 
+var Expandable = React.createClass({
+	propTypes: {
+		startExpanded: React.PropTypes.bool,
+		collapsedLabel: React.PropTypes.string,
+		expandedLabel: React.PropTypes.string
+	},
+	getInitialState() {
+		return {
+			expanded: this.props.startExpanded
+		};
+	},
+	toggleExpanded(evt) {
+		this.setState({
+			expanded: !this.state.expanded
+		});
+	},
+	render() {
+		var indicator = (<span><i className="fa fa-plus"></i> {this.props.collapsedLabel || 'More'}</span>);
+		var content = null;
+		var classes = "expandable-area"
+		if (this.state.expanded) {
+			indicator = (<span><i className="fa fa-minus"></i> {this.props.expandedLabel || 'Less'}</span>);
+			content = this.props.children;
+			classes = classes + ' expanded';
+		}
+		var button = (<a className="expandable-toggle" onClick={this.toggleExpanded}>{indicator}</a>);
+		
+		return (
+			<div className={classes}>
+				{content}
+				{button}
+			</div>
+		);
+	}
+});
+
 module.exports = {
 	EditableText: EditableText,
-	EditableTextWithLabel: EditableTextWithLabel
+	EditableTextWithLabel: EditableTextWithLabel,
+	snapshotDate: snapshotDate,
+	Expandable: Expandable
 };

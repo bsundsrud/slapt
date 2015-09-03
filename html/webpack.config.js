@@ -7,7 +7,7 @@ var node_modules_dir = path.resolve(__dirname, 'node_modules');
 var config = {
   entry: {
     app: ['webpack/hot/dev-server', path.resolve(__dirname, 'src/app.js')],
-    vendors: ['react', 'alt', 'axios', 'react-popover']
+    vendors: ['react', 'alt', 'axios', 'react-popover', 'moment']
   },
   resolve: { alias: {} },
   output: {
@@ -15,13 +15,14 @@ var config = {
     filename: 'bundle.js'
   },
   module: {
-    noParse: [],
+    noParse: [/moment.js/],
     loaders: [
       { test: /\.(js|jsx)$/, loaders: ['react-hot', 'babel'], exclude: [node_modules_dir] }
     ]
   },
   plugins: [
     new webpack.optimize.UglifyJsPlugin(),
+    new webpack.IgnorePlugin(/^\.\/locale$/),
     new webpack.optimize.CommonsChunkPlugin('vendors', 'vendors.js'),
     new HtmlWebpackPlugin({
       inject: true,

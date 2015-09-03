@@ -29,6 +29,22 @@ var SnapshotSource = {
 			loading: SnapshotActions.creatingSnapshot
 		};
 	},
+	createSnapshotFromRepo() {
+		return {
+			remote(snapshots, repoName, snapshotName, description) {
+				return axios.post('/api/repos/' + repoName + '/snapshot', {
+					SnapshotName: snapshotName,
+					Description: description
+				});
+			},
+			local() {
+				return null;
+			},
+			success: SnapshotActions.createSnapshot,
+			error: SnapshotActions.opFailed,
+			loading: SnapshotActions.creatingSnapshot
+		};
+	},
 
 	updateSnapshot() {
 		return {
@@ -47,7 +63,10 @@ var SnapshotSource = {
 	dropSnapshot() {
 		return {
 			remote(snapshots, snapshotName) {
-				return axios.delete('/api/snapshots/' + snapshotName);
+				return axios.delete('/api/snapshots/' + snapshotName).then(
+					function(resp) {
+						return snapshotName;
+					});
 			},
 			local() {
 				return null;

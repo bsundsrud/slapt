@@ -1,5 +1,6 @@
 import React from 'react';
 import RepoStore from '../stores/repoStore';
+import SnapshotStore from '../stores/snapshotStore';
 import AltContainer from 'alt/AltContainer';
 import immutable from 'immutable';
 import util from './util';
@@ -8,7 +9,7 @@ import Popover from 'react-popover';
 
 var RepoShortDetail = React.createClass({
 	dropRepo: function(evt) {
-		RepoStore.dropRepo(this.props.name);
+		RepoStore.dropRepo(this.state.repo.get('Name'));
 		evt.preventDefault();
 	},
 	getInitialState: function() {
@@ -17,7 +18,8 @@ var RepoShortDetail = React.createClass({
 			editing: false,
 			repo: immutable.Map(this.props.repo),
 			originalRepo: immutable.Map(this.props.repo),
-			popoverOpen: false
+			popoverOpen: false,
+			snapshotName: ''
 		};
 	},
 	handleChangeFactory: function(field) {
@@ -57,9 +59,31 @@ var RepoShortDetail = React.createClass({
 		});
 	},
 	togglePopover: function() {
-		this.setState({
-			popoverOpen: !this.state.popoverOpen
-		});
+		if (!this.state.popoverOpen) {
+			// about to open, set a sensible snapshot name
+			this.setState({
+				popoverOpen: !this.state.popoverOpen,
+				snapshotName: this.state.repo.get('Name') + '-' + util.snapshotDate()
+			});
+		} else {
+			this.setState({
+				popoverOpen: !this.state.popoverOpen
+			});
+		}
+		
+	},
+	createSnapshot: function() {
+		var snapName = this.state.snapshotName;
+		var repoName = this.state.repo.get('Name');
+		console.log("Creating snapshot named", snapName);
+		SnapshotStore.createSnapshotFromRepo(
+			repoName,
+			snapName,
+			"Snapshot created from repo '" + repoName + "'");
+		this.togglePopover();
+	},
+	onChangeSnapshot: function(evt) {
+		this.setState({snapshotName: evt.target.value});
 	},
 	render: function() {
 		var comment = this.state.repo.get('Comment');
@@ -70,55 +94,72 @@ var RepoShortDetail = React.createClass({
 		var caretClass = caretBase + (this.state.opened ? " fa-caret-down" : " fa-caret-right");
 		var packageCount = this.props.repo["Packages"] ? this.props.repo['Packages'].length : 'N/A';
 		
-		var editButton = (<button className="btn btn-default" onClick={this.startEdit}>Edit</button>);
+		var popoverBody = (
+			<div className="slapt-popover popover-default">
+				<label className="control-label">Snapshot Name</label>
+				<div className="input-group">
+					<input type="text" className="form-control snapshot-entry" 
+						value={this.state.snapshotName}
+						onChange={this.onChangeSnapshot} />
+					<span className="popover-group-btn">
+						<button className="btn btn-primary" onClick={this.createSnapshot}>Create</button>
+					</span>
+				</div>
+			</div>
+		);
+		var editButton = (
+			<div className="btn-group btn-group-justified">
+				<a className="btn btn-default" onClick={this.startEdit}>Edit</a>
+				<Popover isOpen={this.state.popoverOpen} body={popoverBody} preferPlace="above" onOuterAction={this.togglePopover}>
+					<a className="btn btn-primary" onClick={this.togglePopover}>Create Snapshot</a>
+				</Popover>
+			</div>
+			);
 
 		if (this.state.editing) {
 			editButton = (
-				<div className="btn-group">
-					<button className="btn btn-success" onClick={this.saveAfterEdit}>Save</button>
-					<button className="btn btn-danger" onClick={this.cancelEdit}>Cancel</button>
+				<div className="btn-group btn-group-justified">
+					<a className="btn btn-success" onClick={this.saveAfterEdit}>Save</a>
+					<a className="btn btn-danger" onClick={this.cancelEdit}>Cancel</a>
 				</div>
 			);
 		}
 
 		var panelBody = '';
 		if (this.state.opened) {
-			var popoverBody = (<p style={{backgroundColor: 'white'}}>I'm a popover</p>);
-			var popoverTarget = (<button className="btn btn-default">Popover-trigger</button>);
-			//var popover = Popover({isOpen: true});
-			var popover = (
-				<Popover isOpen={this.state.popoverOpen} body={popoverBody}>
-					<button className="btn btn-default" onClick={this.togglePopover}>Popover-trigger</button>
-				</Popover>
-			);
+			
 			panelBody = (
 				<div className="panel-body">
-					<form className="form-horizontal col-xs-12" onSubmit={this.saveAfterEdit}>
-						<util.EditableTextWithLabel 
-							value={dist}
-							onChange={this.onChangeFactory('DefaultDistribution')}
-							editing={this.state.editing}
-							label="Default Distribution:"
-							defaultValue={name}
-							placeholder="Default Distribution..." />
-						<util.EditableTextWithLabel 
-							value={component}
-							onChange={this.onChangeFactory('DefaultComponent')}
-							editing={this.state.editing}
-							label="Default Component:"
-							defaultValue="main"
-							placeholder="Default Component..." />
-						<div className="form-group">
-							<label className="control-label col-xs-12 col-md-2">Packages:</label>
-							<div className="col-xs-12 col-md-10">
-								<label className="control-label inline-display-control">{packageCount}</label>
-							</div>
-						</div>
-					</form>
-					<hr />
-					{editButton}
-					{popover}
 					
+					<div className="col-xs-12">
+
+						<form className="form-horizontal" onSubmit={this.saveAfterEdit}>
+							<util.EditableTextWithLabel 
+								value={dist}
+								onChange={this.onChangeFactory('DefaultDistribution')}
+								editing={this.state.editing}
+								label="Default Distribution:"
+								defaultValue={name}
+								placeholder="Default Distribution..." />
+							<util.EditableTextWithLabel 
+								value={component}
+								onChange={this.onChangeFactory('DefaultComponent')}
+								editing={this.state.editing}
+								label="Default Component:"
+								defaultValue="main"
+								placeholder="Default Component..." />
+							<div className="form-group">
+								<label className="control-label col-xs-12 col-md-2">Packages:</label>
+								<div className="col-xs-12 col-md-10">
+									<label className="control-label inline-display-control">{packageCount}</label>
+								</div>
+							</div>
+						</form>
+					</div>
+					<div className="col-xs-12">
+						<hr />
+						{editButton}
+					</div>
 				</div>
 			);
 		}

@@ -26,7 +26,6 @@ class RepoStore {
 			newMap[r.Name] = r;
 		});
 		this.repoMap = immutable.Map(newMap);
-		this.repos = immutable.List(repos);
 		this.errorMessage = null;
 	}
 
@@ -35,23 +34,15 @@ class RepoStore {
 	}
 
 	handleListRepos() {
-		this.repos = immutable.List();
 		this.repoMap = immutable.Map();
 	}
 
 	handleAddRepo(repo) {
-		this.repos = this.repos.push(repo);
 		this.repoMap = this.repoMap.set(repo.Name, repo);
 	}
 
 	handleDropRepo(repoName) {
-		this.repos = this.repos.filter((repo) => {
-			if (repo.Name == repoName) {
-				return false;
-			}
-			return true;
-		});
-		this.repoMap = this.repoMap.delete(repoName);
+		this.repoMap = this.repoMap.remove(repoName);
 	}
 
 	handleLoadRepoPackages(data) {
@@ -61,13 +52,6 @@ class RepoStore {
 	}
 
 	handleUpdateRepo(repo) {
-		this.repos = this.repos.map(function(r) {
-			if (r.Name == repo.Name) {
-				return repo;
-			} else {
-				return r;
-			}
-		});
 		this.repoMap = this.repoMap.set(repo.Name, repo);
 	}
 }
