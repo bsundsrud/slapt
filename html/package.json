@@ -3,9 +3,9 @@
   "version": "0.1.0",
   "main": "src/app.js",
   "scripts": {
-    "dev": "webpack-dev-server --devtool eval --progress --colors --content-base build --hot --port 8081",
-    "devbuild": "webpack --progress --colors --profile",
-    "build": "NODE_ENV=production webpack --progress --colors --profile -p"
+    "dev": "gulp webpack-dev-server",
+    "devbuild": "gulp webpack:build-dev",
+    "build": "gulp build"
   },
   "author": "",
   "license": "MIT",

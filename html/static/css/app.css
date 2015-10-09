@@ -1,0 +1,65 @@
+.inline-edit-control {
+	height: 1.7em;
+}
+
+.inline-display-control {
+	font-weight: normal;
+}
+
+.panel-caret {
+	font-size: 1.4em;
+	width: 1.1em;
+	cursor: pointer;
+	margin-right: .2em;
+}
+
+.slapt-popover {
+	background-color: #fff;
+	border: 1px solid transparent;
+	border-radius: 4px;
+	box-shadow: 0 1px 10px rgba(0,0,0,.05);
+	padding: .5em .5em 1em;
+}
+
+.popover-default {
+	border-color: #ddd;
+}
+
+.popover-group-btn {
+	position: relative;
+	font-size: 0;
+	white-space: nowrap;
+	vertical-align: middle;
+	display: table-cell;
+}
+
+.popover-group-btn > .btn {
+	border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+.snapshot-entry {
+	width: 20em !important;
+}
+
+.expandable-toggle {
+	position: absolute;
+	left: 0;
+	top: 100%;
+	color: #000;
+	background-color: #eee;
+	border: 1px solid #ddd;
+	/*border-radius: 3px;*/
+	padding: 2px 5px;
+	font-size: 0.8em;
+	border-radius: 4px;
+}
+
+.expandable-area {
+	position: relative;
+	margin-bottom: 2.5em;
+}
+
+.dl-contiguous {
+	margin-bottom: 0;
+}
