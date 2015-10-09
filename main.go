@@ -40,7 +40,7 @@ func run(cmd *commander.Command) (returnCode int) {
 	}()
 	returnCode = 0
 
-	flags, _, err := cmd.ParseFlags([]string{"-config", "/home/benn/.slapt.conf"})
+	flags, _, err := cmd.ParseFlags([]string{"-config", "conf/slapt.conf"})
 	if err != nil {
 		ctx.Fatal(err)
 	}
