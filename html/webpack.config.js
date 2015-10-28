@@ -64,6 +64,7 @@ if (production) {
 }
 
 module.exports = {
+    debug: !production,
     devtool: production ? false : 'eval',
     entry: './src/index',
     output: {
@@ -88,4 +89,9 @@ module.exports = {
             }
         ]
     },
+    devServer: {
+        proxy: {
+            "/api/*": "http://localhost:8080"
+        }
+    }
 };

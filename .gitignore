@@ -1,5 +1,5 @@
 node_modules/
 _vendor
 slapt
-html/build
+html/dist
 .idea/

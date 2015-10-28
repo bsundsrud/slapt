@@ -1,12 +1,12 @@
 {
   "name": "slApt",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Web frontend to Aptly repository tool",
+  "main": "src/index.js",
   "private": true,
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "webpack-dev-server --hot --inline --progress",
+    "dev": "webpack-dev-server --hot --inline --progress --port 8081",
     "build": "NODE_ENV=production webpack --progress -p"
   },
   "author": "Benn Sundsrud <benn.sundsrud@gmail.com>",
