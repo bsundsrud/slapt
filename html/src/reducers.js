@@ -35,10 +35,68 @@ function repos(state = [], action = undefined) {
 }
 
 function snapshots(state = [], action = undefined) {
+    switch (action.type) {
+        case actions.FETCH_SNAPSHOT_LIST:
+            switch (action.status) {
+                case 'pending':
+                    return {
+                        loading: true,
+                        items: []
+                    };
+                case 'success':
+                    return {
+                        loading: false,
+                        items: action.snapshots
+                    };
+            }
+            return {
+                loading: false,
+                items: []
+            };
+        case actions.ADD_SNAPSHOT:
+            return [
+                action.snapshot,
+                ...state
+            ];
+        case actions.DELETE_SNAPSHOT:
+            return state.filter(snapshot => snapshot.name !== action.snapshotName);
+        case actions.EDIT_SNAPSHOT:
+            return state.map(snapshot =>
+                snapshot.name === action.snapshot.name ? Object.assign({}, snapshot, action.snapshot) : snapshot)
+    }
     return state;
 }
 
 function endpoints(state = [], action = undefined) {
+    switch (action.type) {
+        case actions.FETCH_ENDPOINT_LIST:
+            switch (action.status) {
+                case 'pending':
+                    return {
+                        loading: true,
+                        items: []
+                    };
+                case 'success':
+                    return {
+                        loading: false,
+                        items: action.endpoints
+                    };
+            }
+            return {
+                loading: false,
+                items: []
+            };
+        case actions.ADD_ENDPOINT:
+            return [
+                action.endpoint,
+                ...state
+            ];
+        case actions.DELETE_ENDPOINT:
+            return state.filter(endpoint => endpoint.name !== action.endpointName);
+        case actions.EDIT_ENDPOINT:
+            return state.map(endpoint =>
+                endpoint.name === action.endpoint.name ? Object.assign({}, endpoint, action.endpoint) : endpoint)
+    }
     return state;
 }
 

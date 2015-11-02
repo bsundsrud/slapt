@@ -1,8 +1,4 @@
-.repo {
+.endpoint {
     display: inline-block;
     margin: 10px;
-}
-
-.repo .disabled {
-    color: #999;
 }

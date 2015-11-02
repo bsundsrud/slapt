@@ -6,29 +6,40 @@ import configureStore from './store';
 import { addRepo, editRepo, deleteRepo } from './actions';
 import { Provider } from 'react-redux';
 import RepoList from './containers/RepoList';
+import SnapshotList from './containers/SnapshotList';
+import EndpointList from './containers/EndpointList';
 
 const initialState = {
     repos: {
         loading: false,
         items: []
     },
-    snapshots: [],
-    endpoints: []
+    snapshots: {
+        loading: false,
+        items: []
+    },
+    endpoints: {
+        loading: false,
+        items: []
+    }
 };
 
 const store = configureStore(initialState);
 
-let unsub = store.subscribe((something) => console.log(store.getState()));
-
-class Main extends Component {
+class RootElement extends Component {
     render() {
-        return (<div>Hello, World!</div>)
+        return (
+            <div>
+                <RepoList/>
+                <SnapshotList/>
+                <EndpointList/>
+            </div>);
     }
 }
 
 render(
     <Provider store={store}>
-        <RepoList/>
+        <RootElement/>
     </Provider>,
     document.getElementById('root'));
 
