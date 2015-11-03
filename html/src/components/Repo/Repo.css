@@ -1,4 +1,5 @@
 .repo {
     display: inline-block;
     margin: 10px;
+    float:left;
 }

@@ -30,8 +30,11 @@ class EndpointList extends Component {
         });
         return (
             <div className="container-fluid">
-                <button className="btn btn-primary" onClick={this.handleRefresh}>Refresh</button>
-                <div>
+                <div className="col-xs-12 col-sm-1">
+                    <h3>Endpoints</h3>
+                    <button className="btn btn-primary" onClick={this.handleRefresh}>Refresh</button>
+                </div>
+                <div className="col-xs-12 col-sm-11">
                     { loading ? 'Loading...' : endpointList }
                 </div>
             </div>

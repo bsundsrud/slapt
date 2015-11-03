@@ -6,6 +6,7 @@ class Repo extends Component {
         super(props);
         this.toggleEdit = this.toggleEdit.bind(this);
         this.submit = this.submit.bind(this);
+        this.deleteRepo = this.deleteRepo.bind(this);
         this.state = { editing: false };
     }
 
@@ -19,7 +20,27 @@ class Repo extends Component {
 
     submit(e) {
         e.preventDefault();
-        console.log(e);
+        if (this.props.onSubmitEdit) {
+            const f = (resolve, reject) => {
+                this.props.onSubmitEdit({ resolve, reject }, {
+                    Name: this.props.name,
+                    Comment: this.commentInput.value,
+                    Distribution: this.distInput.value,
+                    Component: this.componentInput.value
+                });
+            };
+            var p = new Promise(f);
+            p.then(() => this.setState({editing: false}), () => {});
+        }
+    }
+
+    deleteRepo(e) {
+        e.preventDefault();
+        const f = (resolve, reject) => {
+            this.props.onDelete({ resolve, reject}, this.props.name);
+        };
+        var p = new Promise(f);
+        p.then(() => {},() => {});
     }
 
     toggleEdit(e) {
@@ -38,9 +59,11 @@ class Repo extends Component {
                 </div>
                 <div className="panel-body">
                     <p>{ comment }</p>
-                    <p>Distribution: { distribution || 'None' } Component: { component || 'main' }</p>
+                    <hr/>
+                    <p className="small">Distribution: { distribution || 'None' }</p>
+                    <p className="small">Component: { component || 'main' }</p>
+                    <button className="btn btn-default" onClick={this.toggleEdit}>Edit</button>
                 </div>
-                <button className="btn btn-default" onClick={this.toggleEdit}>Edit</button>
             </div>);
     }
 
@@ -50,13 +73,14 @@ class Repo extends Component {
         return (
             <div className="repo panel panel-default">
                 <div className="panel-heading">
-                    <span>{ name }</span><span className="pull-right disabled">Repo</span>
+                    <span>{ name }</span><a className="text-danger pull-right" onClick={ this.deleteRepo }><i className="fa fa-trash-o"></i> Delete</a>
                 </div>
                 <div className="panel-body">
                     <form className="form-horizontal">
                         <div className="form-group">
                             <label className="col-sm-3 control-label">Comment</label>
                             <div className="col-sm-9">
+
                                 <input type="text" className="form-control" defaultValue={ comment } ref={(ref) => this.commentInput = ref }/>
                             </div>
                         </div>
@@ -69,13 +93,15 @@ class Repo extends Component {
                         <div className="form-group">
                             <label className="col-sm-3 control-label">Component</label>
                             <div className="col-sm-9">
-                                <input type="text" className="form-control" defaultValue={ component } ref={(ref) => this.componenttInput = ref }/>
+                                <input type="text" className="form-control" defaultValue={ component } ref={(ref) => this.componentInput = ref }/>
                             </div>
                         </div>
                         <div className="form-group">
-                            <div className="col-sm-offset-3 col-sm-9">
-                                <button className="btn btn-primary" onClick={this.submit}>Save</button>
-                                <button className="btn btn-default" onClick={this.toggleEdit}>Cancel</button>
+                            <div className="col-sm-6">
+                                <button className="btn btn-primary max-width" onClick={this.submit}>Save</button>
+                            </div>
+                            <div className="col-sm-6">
+                                <button className="btn btn-default max-width" onClick={this.toggleEdit}>Cancel</button>
                             </div>
                         </div>
                     </form>
@@ -89,7 +115,8 @@ Repo.propTypes = {
     comment: PropTypes.string,
     distribution: PropTypes.string,
     component: PropTypes.string,
-    onSubmitEdit: PropTypes.func
+    onSubmitEdit: PropTypes.func,
+    onDelete: PropTypes.func.isRequired
 };
 
 export default Repo;

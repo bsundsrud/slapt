@@ -5,7 +5,7 @@ import createLogger from 'redux-logger';
 
 const createStoreWithMiddleware = applyMiddleware(
     thunkMiddleware,
-    createLogger()
+    createLogger({collapsed: true})
 )(createStore);
 
 export default function configureStore(initialState) {

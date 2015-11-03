@@ -31,7 +31,9 @@ class RootElement extends Component {
         return (
             <div>
                 <RepoList/>
+                <hr/>
                 <SnapshotList/>
+                <hr/>
                 <EndpointList/>
             </div>);
     }

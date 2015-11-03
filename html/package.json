@@ -12,6 +12,7 @@
   "author": "Benn Sundsrud <benn.sundsrud@gmail.com>",
   "license": "ISC",
   "dependencies": {
+    "classnames": "^2.2.0",
     "isomorphic-fetch": "^2.2.0",
     "react": "^0.14.0",
     "react-dom": "^0.14.0",

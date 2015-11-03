@@ -1,13 +1,19 @@
 import { combineReducers } from 'redux';
 import * as actions from './actions';
 
-function repos(state = [], action = undefined) {
+function repos(state = {}, action = undefined) {
     switch (action.type) {
         case actions.ADD_REPO:
-            return [
-                action.repo,
-                ...state
-            ];
+            switch (action.status) {
+                case 'pending':
+                    return state;
+                case 'success':
+                    return {
+                        loading: false,
+                        items: [...state.items, action.repo]
+                    }
+            }
+            return state;
         case actions.FETCH_REPO_LIST:
             switch (action.status) {
                 case 'pending':
@@ -26,15 +32,29 @@ function repos(state = [], action = undefined) {
                 items: []
             };
         case actions.DELETE_REPO:
-            return state.filter(repo => repo.name !== action.repoName);
+            switch (action.status) {
+                case 'pending':
+                    return state;
+                case 'success':
+                    return {
+                        loading: false,
+                        items: state.items.filter(repo => repo.Name !== action.repoName)
+                    };
+            }
+            return state;
         case actions.EDIT_REPO:
-            return state.map(repo =>
-                repo.name === action.repo.name ? Object.assign({}, repo, action.repo) : repo)
+            if (action.status === 'success') {
+                return {
+                    loading: false,
+                    items: state.items.map(repo =>
+                        repo.name === action.repo.name ? Object.assign({}, repo, action.repo) : repo)
+                };
+            }
     }
     return state;
 }
 
-function snapshots(state = [], action = undefined) {
+function snapshots(state = {}, action = undefined) {
     switch (action.type) {
         case actions.FETCH_SNAPSHOT_LIST:
             switch (action.status) {
@@ -67,7 +87,7 @@ function snapshots(state = [], action = undefined) {
     return state;
 }
 
-function endpoints(state = [], action = undefined) {
+function endpoints(state = {}, action = undefined) {
     switch (action.type) {
         case actions.FETCH_ENDPOINT_LIST:
             switch (action.status) {

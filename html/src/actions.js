@@ -19,10 +19,41 @@ export const FETCH_ENDPOINT_LIST = 'FETCH_ENDPOINT_LIST';
 export const ADD_ENDPOINT = 'ADD_ENDPOINT';
 export const DELETE_ENDPOINT = 'DELETE_ENDPOINT';
 
-export function addRepo(repo) {
+function addRepoSubmit(repo) {
     return {
         type: ADD_REPO,
+        status: 'pending',
         repo
+    }
+}
+
+function addRepoResult(repo) {
+    return {
+        type: ADD_REPO,
+        status: 'success',
+        repo
+    }
+}
+
+
+export function addRepo(repo) {
+    return (dispatch) => {
+        dispatch(addRepoSubmit(repo));
+        return fetch(`/api/repos`, {
+            method: 'post',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                Name: repo.Name,
+                Comment: repo.Comment,
+                DefaultDistribution: repo.Distribution,
+                DefaultComponent: repo.Component
+            })
+        })
+            .then(response => response.json())
+            .then(json => dispatch(addRepoResult(json)));
     }
 }
 
@@ -74,17 +105,64 @@ export function fetchSnapshotList() {
     }
 }
 
-export function editRepo(repo) {
+function editRepoSubmit(repo) {
     return {
         type: EDIT_REPO,
+        status: 'pending',
         repo
     }
 }
 
-export function deleteRepo(repoName) {
+function editRepoResult(repo) {
+    return {
+        type: EDIT_REPO,
+        status: 'success',
+        repo
+    }
+}
+
+export function editRepo(repo) {
+    return (dispatch) => {
+        dispatch(editRepoSubmit(repo));
+        return fetch(`/api/repos/${repo.Name}`, {
+            method: 'put',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                Comment: repo.Comment,
+                DefaultDistribution: repo.Distribution,
+                DefaultComponent: repo.Component
+            })
+        })
+            .then(response => response.json())
+            .then(json => dispatch(editRepoResult(json)));
+    }
+}
+
+function deleteRepoSubmit(repoName) {
     return {
         type: DELETE_REPO,
+        status: 'pending',
         repoName
+    }
+}
+
+function deleteRepoSuccess(repoName) {
+    return {
+        type: DELETE_REPO,
+        status: 'success',
+        repoName
+    }
+}
+
+
+export function deleteRepo(repoName) {
+    return (dispatch) => {
+        dispatch(deleteRepoSubmit(repoName));
+        return fetch(`/api/repos/${repoName}`, { method: 'delete' })
+            .then(response => dispatch(deleteRepoSuccess(repoName)));
     }
 }
 
